@@ -1,125 +1,104 @@
 const navcomponent = Vue.component('navigation', {
 	template: '#navigation-template',
 	props: ['homepage', 'name', 'newItem', 'parent', 'active', 'filetype', 'status', 'elementtype', 'element', 'folder', 'level', 'url', 'root', 'freeze'],
-	data: function () {
+	data: function(){
 		return {
 			showForm: false,
 		}
 	},
 	methods: {
-		checkMove : function(evt)
-		{
-			if(evt.dragged.classList.contains('folder') && evt.from.parentNode.id != evt.to.parentNode.id)
-			{
-				return false;				
+		checkMove : function(evt){
+			if (evt.dragged.classList.contains('folder') && evt.from.parentNode.id != evt.to.parentNode.id) {
+				return false;
 			}
-			if(evt.dragged.firstChild.className == 'active' && !editor.draftDisabled)
-			{
+			if (evt.dragged.firstChild.className == 'active' && !editor.draftDisabled) {
 				publishController.errors.message = "Please save your changes before you move the file";
 				return false;
 			}
 			return true;
 		},
-		onStart : function(evt)
-		{
+		onStart : function(evt){
 			/* delete error messages if exist */
 			publishController.errors.message = false;
 		},
-		onEnd : function(evt)
-		{
+		onEnd : function(evt){
 			var locator = {
 				'item_id': 			evt.item.id,
-				'parent_id_from': 	evt.from.parentNode.id, 
-				'parent_id_to': 	evt.to.parentNode.id, 
+				'parent_id_from': 	evt.from.parentNode.id,
+				'parent_id_to': 	evt.to.parentNode.id,
 				'index_old': 		evt.oldIndex,
 				'index_new': 		evt.newIndex,
 				'active':			evt.item.getElementsByTagName('a')[0].className,
 				'url':				document.getElementById("path").value,
 				'csrf_name': 		document.getElementById("csrf_name").value,
-				'csrf_value':		document.getElementById("csrf_value").value,				
+				'csrf_value':		document.getElementById("csrf_value").value,
 			};
-						
-			if(locator.parent_id_from == locator.parent_id_to && locator.index_old == locator.index_new)
-			{
+
+			if (locator.parent_id_from == locator.parent_id_to && locator.index_old == locator.index_new) {
 				return
 			}
-			
+
 			evt.item.classList.add("load");
-			
+
 			var self = this;
-			
+
 			self.$root.$data.freeze = true;
 			self.errors = {title: false, content: false, message: false};
-			
+
 			var url = this.root + '/api/v1/article/sort';
 			var method 	= 'POST';
 
-			sendJson(function(response, httpStatus)
-			{
-				if(response)
-				{
+			sendJson(function(response, httpStatus) {
+				if (response) {
 					self.$root.$data.freeze = false;
 					var result = JSON.parse(response);
-					
-					if(result.errors)
-					{
+
+					if (result.errors) {
 						publishController.errors.message = result.errors;
 					}
-					if(result.url)
-					{
+					if (result.url) {
 						window.location.replace(result.url);
 					}
-					if(result.data)
-					{
+					if (result.data) {
 						evt.item.classList.remove("load");
-						self.$root.$data.items = result.data;						
+						self.$root.$data.items = result.data;
 					}
 				}
 			}, method, url, locator );
 		},
-		getUrl : function(root, url)
-		{
+		getUrl : function(root, url) {
 			return root + '/tm/content/' + this.$root.$data.editormode + url
 		},
-		getLevel : function(level)
-		{
+		getLevel : function(level) {
 			level = level.toString();
 			level = level.split('.').length;
 			return 'level-' + level;
 		},
-		getIcon : function(elementtype, filetype)
-		{
-			if(elementtype == 'file')
-			{
+		getIcon : function(elementtype, filetype) {
+			if (elementtype == 'file') {
 				return 'icon-doc-text ' + filetype
 			}
-			if(elementtype == 'folder')
-			{
+			if (elementtype == 'folder') {
 				return 'icon-folder-empty ' + filetype
 			}
 		},
-		checkActive : function(active,parent)
-		{
-			if(active && !parent)
-			{
+		checkActive : function(active,parent) {
+			if (active && !parent) {
 				return 'active';
 			}
 			return 'inactive';
 		},
-		toggleForm : function()
-		{
+		toggleForm : function(){
 			this.showForm = !this.showForm;
 		},
-		addFile : function(type)
-		{
+		addFile : function(type){
 			publishController.errors.message = false;
 
-			if(this.$root.$data.format.test(this.newItem) || !this.newItem || this.newItem.length > 40)
-			{
+			if (this.$root.$data.format.test(this.newItem) || !this.newItem || this.newItem.length > 40) {
 				publishController.errors.message = 'Special Characters are not allowed. Length between 1 and 40.';
 				return;
 			}
-			
+
 			var newItem = {
 				'folder_id': 		this.$el.id,
 				'item_name': 		this.newItem,
@@ -128,36 +107,30 @@ const navcomponent = Vue.component('navigation', {
 				'csrf_name': 		document.getElementById("csrf_name").value,
 				'csrf_value':		document.getElementById("csrf_value").value,
 			};
-			
+
 			/* evt.item.classList.add("load"); */
-			
+
 			var self = this;
-			
+
 			self.$root.$data.freeze = true;
 			self.errors = {title: false, content: false, message: false};
 			
 			var url = this.root + '/api/v1/article';
 			var method 	= 'POST';
 
-			sendJson(function(response, httpStatus)
-			{
-				if(response)
-				{
+			sendJson(function(response, httpStatus) {
+				if (response) {
 					self.$root.$data.freeze = false;
 					var result = JSON.parse(response);
-					
-					if(result.errors)
-					{
+					if (result.errors) {
 						publishController.errors.message = result.errors;
 					}
-					if(result.url)
-					{
+					if (result.url) {
 						window.location.replace(result.url);
 					}
-					if(result.data)
-					{
+					if (result.data) {
 						// evt.item.classList.remove("load");
-						self.$root.$data.items = result.data;						
+						self.$root.$data.items = result.data;
 						self.showForm = false;
 					}
 				}
@@ -197,16 +170,14 @@ let navi = new Vue({
 		hideModal: function(e){
 			this.modalWindow = false;
 		},
-		addFolder: function()
-		{
+		addFolder: function(){
 			publishController.errors.message = false;
 
-			if(this.format.test(this.folderName) || this.folderName < 1 || this.folderName.length > 20)
-			{ 
+			if (this.format.test(this.folderName) || this.folderName < 1 || this.folderName.length > 20) { 
 				publishController.errors.message = 'Special Characters are not allowed. Length between 1 and 20.';
 				return;
 			}
-			
+
 			var newFolder = {
 				'item_name': 		this.folderName,
 				'url':				document.getElementById("path").value,
@@ -215,66 +186,57 @@ let navi = new Vue({
 			};
 
 			var self = this;
-			
+
 			self.freeze = true;
 			self.errors = {title: false, content: false, message: false};
 			
 			var url = this.root + '/api/v1/basefolder';
 			var method 	= 'POST';
 
-			sendJson(function(response, httpStatus)
-			{
-				if(response)
-				{
+			sendJson(function(response, httpStatus) {
+				if (response) {
 					self.freeze = false;
 					var result = JSON.parse(response);
-					
-					if(result.errors)
-					{
+
+					if (result.errors) {
 						publishController.errors.message = result.errors;
 					}
-					if(result.url)
-					{
+					if (result.url) {
 						window.location.replace(result.url);
 					}
-					if(result.data)
-					{
-						self.items = result.data;						
+					if (result.data) {
+						self.items = result.data;
 					}
 				}
 			}, method, url, newFolder );
 		},
-		getNavi: function()
-		{
+		getNavi: function(){
 			publishController.errors.message = false;
 
 			var self = this;
-			
+
 			self.freeze = true;
-			self.errors = {title: false, content: false, message: false};
+			self.errors = { title: false, content: false, message: false };
 
 			var activeItem = document.getElementById("path").value;
 			var url = this.root + '/api/v1/navigation?url=' + activeItem;
 			var method 	= 'GET';
 
-			sendJson(function(response, httpStatus)
-			{
-				if(response)
-				{
+			sendJson(function(response, httpStatus) {
+				if (response) {
 					self.freeze = false;
 					var result = JSON.parse(response);
-					
-					if(result.errors)
-					{
+
+					if (result.errors) {
 						publishController.errors.message = result.errors;
 					}
-					if(result.data)
-					{
+					if (result.data) {
 						self.items = result.data;
-						self.homepage = result.homepage;						
+						self.homepage = result.homepage;
 					}
 				}
 			}, method, url, activeItem );
 		}
 	}
+
 })

@@ -3,19 +3,19 @@
 {% set startpage = old.settings.startpage ? old.settings.startpage : settings.startpage %}
 
 {% block content %}
-	
+
 	<div class="formWrapper">
 
 		<form method="POST" action="{{ path_for('plugins.save') }}">
 
 			<section id="plugins" class="plugins">
-			
+
 				<header class="headline">
 					<h1>Plugins</h1>
 				</header>
-				
+
 				{% for pluginName,plugin in plugins %}
-				
+
 					<fieldset class="medium card{{ errors[pluginName] ? ' errors' : '' }}">
 						<div class="cardInner cardHead">
 							<header>
@@ -27,11 +27,12 @@
 									</label>
 								</div>
 							</header>
+
 							<div id="{{ pluginName }}" class="fc-plugin-version update-banner">{{ plugin.version ? plugin.version : 'Unknown' }}</div>
-							
+
 							<div class="cardDescPlugin">
 								<p>{{ plugin.description ? plugin.description : 'No description' }}</p>
-								
+
 								<ul class="cardInfo">
 									<li>{{ plugin.version ? plugin.version : 'Unknown' }}</li><li>
 									{{ plugin.licence ? plugin.licence : 'Unkown' }}</li><li>
@@ -40,42 +41,42 @@
 								</ul>
 							</div>
 						<div class="cardInner cardFields{{ errors[pluginName] ? ' open' : '' }}">
-						
+
 							{% for field in plugin.forms.fields %}
-								
+
 								{% if field.type == 'fieldset' %}
-											
+
 									<fieldset class="subfield">
 										<legend>{{ field.legend }}</legend>
 											{% for field in field.fields %}
 												{% include '/partials/fields.twig' with {'itemName' : pluginName, 'object' : 'plugins' } %}
 											{% endfor %}
 										</fieldset>
-											
+
 								{% else %}
-								
+
 									{% include '/partials/fields.twig' with {'itemName' : pluginName, 'object' : 'plugins' } %}
-								
+
 								{% endif %}
-								
+
 							{% endfor %}
-							
+
 						</div>
 							<button type="button" class="plugin-button fc-settings{{ settings.plugins[pluginName].active ? ' active' : '' }}{{ plugin.forms.fields|length > 0 ? ' has-settings' : ' no-settings'}}">{{ plugin.forms.fields|length > 0 ? 'Settings <span class="button-arrow"></span>' : '&nbsp;'}}</button>
 						</div>
-						
+
 					</fieldset>
-					
+
 				{% endfor %}
-			
+
 			</section>
-			
+
 			<input type="submit" value="Save All Settings" />
 
 			{{ csrf_field() | raw }}
-			
+
 		</form>
-	
+
 	</div>
-	
+
 {% endblock %}

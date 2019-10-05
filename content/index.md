@@ -1,4 +1,3 @@
-# Typemill
+# Home
 
-*Typemill is a user-friendly and lightweight open source CMS for publishing text-works like prose, lyrics, manuals, documentations, studies and more. Just download and start.*
-
+*Our home. Is a very, very, very nice home. With 2 trees in the yard. How could life be so hard?*

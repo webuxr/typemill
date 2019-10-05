@@ -3,9 +3,9 @@
 {% block title %}Setup Welcome{% endblock %}
 
 {% block content %}
-		
+
 	<div class="welcome">
-	
+
 		<div class="medium">
 			<div class="welcomeIntro">
 				<h1>Hurra!</h1>
@@ -15,8 +15,8 @@
 				<p><strong>Get help:</strong> If you have any questions, please consult the <a target="_blank" href="https://typemill.net/typemill"><i class="icon-link-ext"></i> docs</a> or open a new issue on <a target="_blank" href="https://github.com/typemill/typemill"><i class="icon-link-ext"></i> github</a>.</p>
 			</div>
 			<a class="button" href="{{ path_for('settings.show') }}">Configure your website</a>
- 		</div>
-		
+		</div>
+
 		<div class="small">
 			<div class="welcomeCard">
 				<a href="{{ path_for('settings.show') }}">
@@ -24,7 +24,7 @@
 						<h3>System</h3>
 						<p>Give your new website a name, add the author and choose a copyright.</p>				
 					</div>
-				</a>				
+				</a>
 			</div>
 			<div class="welcomeCard">
 				<a href="{{ path_for('themes.show') }}">
@@ -43,7 +43,7 @@
 				</a>
 			</div>
 		</div>
-		
+
 	</div>
-	
+
 {% endblock %}

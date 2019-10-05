@@ -2,19 +2,19 @@
 {% block title %}User{% endblock %}
 
 {% block content %}
-	
+
 	<div class="formWrapper">
 
 		<form method="POST" action="{{ path_for('user.update') }}">
-		
+
 			<section id="user" class="settings">
 
 				<header class="headline">
 					<h1>Edit User</h1>
 				</header>
-				
+
 				<fieldset class="auth">
-				
+
 					<div class="large{{ errors.username ? ' errors' : '' }}">
 						<label for="username">Username <small>(not editable)</small></label>
 						<input type="text" name="showusername" value="{{ old.username ? old.username : userdata.username }}" required disabled>
@@ -23,7 +23,7 @@
 							<span class="error">{{ errors.username | first }}</span>
 						{% endif %}
 					</div>
-					
+
 					<div class="large{{ errors.email ? ' errors' : '' }}">
 						<label for="email">E-Mail <abbr title="required">*</abbr></label>
 						<input type="text" name="email" value="{{ old.email ? old.email : userdata.email }}" required>
@@ -45,7 +45,7 @@
 							{% endif %}
 						</div>
 					{% endif %}
-					
+
 					<div class="large{{ errors.password ? ' errors' : '' }}">
 						<label for="password">Actual Password</label>
 						<input type="password" name="password">
@@ -61,7 +61,7 @@
 							<span class="error">{{ errors.newpassword | first }}</span>
 						{% endif %}
 					</div>
-					
+
 				</fieldset>
 
 			</section>
@@ -71,9 +71,9 @@
 			<div class="actionLink">
 				<a href="#" id="openModal" class="openModal">Delete User</a>
 			</div>
-		</form>		
+		</form>
 	</div>
-	
+
 	<div id="modalWindow" class="modal">
 		<div class="modalInner">
 			<div id="closeModal" class="closeModal">X</div>
@@ -86,6 +86,5 @@
 			</form>
 		</div>
 	</div>
-	
-	
+
 {% endblock %}

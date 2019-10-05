@@ -2,31 +2,29 @@
 {% block title %}Visual Content Editor{% endblock %}
 
 {% block content %}
-	
+
 	<div class="formWrapper">
-		
+
 		<section id="blox">
-			
+
 			<div class="blox-body">
-			
+
 				<transition name="fade" v-cloak>
 					<div v-if="bloxOverlay" class="blox-overlay"></div>
 				</transition>
-				
+
 				<div id="initial-content">
-				
 					<div class="blox title">{{title}}</div>
-					
+
 					{% for block in content %}
 							<div class="blox" >{{block}}</div>
 					{% endfor %}
-
 				</div>
-				
+
 				<content-block class="title" :body="false">
 					<div class="blox title" @click.prevent="setData( $event )" data-id="0" id="blox-0" v-if="title" v-html="title.html"></div>
 				</content-block>
-				
+
 				<div id="sortblox" v-cloak>
 					<draggable v-model="html" @start="onStart" @end="moveBlock" :disabled="sortdisabled" :animation="150">
 						<content-block :body="true" v-for="(block, index) in html" v-if="index !== 0">
@@ -49,7 +47,7 @@
 						</content-block>
 					</draggable>
 				</div>
-	
+
 				<div class="format-bar">
 					<content-block :body="false">
 						<button class="format-item" @click.prevent="setData( $event, 'markdown-component' )" data-id="99999" id="blox-99999" title="paragraph"><i class="icon-paragraph"></i></button>
@@ -67,16 +65,16 @@
 						<button class="format-item" @click.prevent="setData( $event, 'math-component' )" data-id="99999" id="blox-99999" title="math"><i class="icon-math"></i></button>
 					</content-block>
 				</div>
-				
+
 			</div>
-			
+
 		</section>
 
 		{% include 'editor/publish-controller.twig' %}
-				
+
 		<input id="path" type="hidden" value="{{ item.urlRel }}" required readonly />
 		{{ csrf_field() | raw }}
-		
+
 	</div>
-	
+
 {% endblock %}

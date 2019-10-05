@@ -1,4 +1,5 @@
 <div class="editor buttonset" id="publishController" data-published="{{ item.published }}" data-drafted="{{ item.drafted }}" v-cloak>
+
 	<div v-if="errors.message" class="message error">${ errors.message }</div>
 	<button v-if="raw" @click.prevent="saveDraft" id="draft" :class="draftResult" :disabled="draftDisabled"><span class="desktop">Save&nbsp;</span>Draft</button><button @click.prevent="publishDraft" id="publish" :class="publishResult" :disabled="publishDisabled">Publish</button>
 	<div class="secondary">
@@ -8,6 +9,7 @@
 		<a v-if="raw" href="{{ base_url }}/tm/content/visual{{item.urlRelWoF}}" class="button--secondary"><span class="desktop">visual mode</span><span class="mobile">visual</span></a>
 		<a target="_blank" class="button--secondary" href="{{ item.urlAbs }}"><i class="icon-link-ext"></i></a>
 	</div>
+
 	<transition name="fade">
 		<div v-if="modalWindow" id="modalWindow" class="modalWindow">
 			<div class="modalInner">
@@ -18,4 +20,5 @@
 			</div>
 		</div>
 	</transition>
+
 </div>

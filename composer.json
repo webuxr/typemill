@@ -2,31 +2,31 @@
     "name": "trendschau/typemill",
     "type": "project",
     "description": "A crazy simple tool to create web-documentations and online manuals with markdown files.",
-    "keywords": ["documentations","manuals","flat-file","Markdown","php"],
+    "keywords": ["documentations", "manuals", "flat-file", "Markdown", "php"],
     "homepage": "http://typemill.net",
     "license": "MIT",
     "config": {
-        "vendor-dir": "system/vendor"
+      "vendor-dir": "system/vendor"
     },
     "require": {
-        "slim/slim": "~3.7",
-		"twig/twig": "~1.18",		
-		"slim/twig-view": "~2.3",
-		"slim/flash": "~0.4",
-        "Slim/csrf": "~0.8",		
-        "symfony/yaml": "~2.8",
-		"symfony/event-dispatcher": "~3.3",		
-		"erusev/parsedown": "~1.4",
-		"erusev/parsedown-extra": "dev-master",
-		"jbroadway/urlify": "~1.1",
-		"vlucas/valitron": "dev-master"
+      "slim/slim": "~3.7",
+      "twig/twig": "~1.18",
+      "slim/twig-view": "~2.3",
+      "slim/flash": "~0.4",
+      "Slim/csrf": "~0.8",	
+      "symfony/yaml": "~2.8",
+      "symfony/event-dispatcher": "~3.3",
+      "erusev/parsedown": "~1.4",
+      "erusev/parsedown-extra": "dev-master",
+      "jbroadway/urlify": "~1.1",
+      "vlucas/valitron": "dev-master"
     },
-	"autoload": {
-		"psr-4": {
-			"Typemill\\": "system/",
-			"Plugins\\": "plugins/"
-		}
-	},
+    "autoload": {
+      "psr-4": {
+        "Typemill\\": "system/",
+        "Plugins\\": "plugins/"
+      }
+    },
     "minimum-stability": "dev",
-    "prefer-stable": true	
+    "prefer-stable": true
 }

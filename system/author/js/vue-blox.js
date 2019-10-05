@@ -24,7 +24,7 @@ const contentComponent = Vue.component('content-block', {
 				'</div>' +
 				'<div v-if="load" class="loadoverlay"><span class="load"></span></div>' +
 			  '</div>',
-	data: function () {
+	data: function (){
 		return {
 			preview: 'visible',
 			edit: false,
@@ -35,36 +35,33 @@ const contentComponent = Vue.component('content-block', {
 			newblock: false,
 		}
 	},
-	mounted: function()
-	{
+	mounted: function(){
 		eventBus.$on('closeComponents', this.closeComponents);
 	},
 	methods: {
-		addNewBlock: function(event)
-		{
+		addNewBlock: function(event){
 			/* we have to get from dom because block-data might not be set when user clicked on add button before opened the component */
 			var bloxeditor = event.target.closest('.blox-editor');
 			var bloxid = bloxeditor.getElementsByClassName('blox')[0].dataset.id;
-		
+
 			this.switchToPreviewMode();
-		
+
 			/* add new empty data */
 			this.$root.$data.html.splice(bloxid,0, false);
 			this.$root.$data.markdown.splice(bloxid,0, '');
-			
+
 			/* show overlay and bring newblock to front, so that user cannot change any other data (ids not synchronized with stored data now) */
 			this.$root.$data.bloxOverlay = true;
 			this.$root.$data.newblock = true;
 			this.newblock = 'newblock';
 			self.$root.$data.sortdisabled = true;
 		},
-		closeNewBlock: function($event)
-		{
+		closeNewBlock: function($event){
 			var bloxeditor = event.target.closest('.blox-editor');			
 			var bloxid = bloxeditor.getElementsByClassName('blox')[0].dataset.id;
 
 			this.switchToPreviewMode();
-			
+
 			this.$root.$data.bloxOverlay = false;
 			this.$root.$data.newblock = false;
 			this.newblock = false;
@@ -73,53 +70,43 @@ const contentComponent = Vue.component('content-block', {
 			this.$root.$data.html.splice(bloxid,1);
 			this.$root.$data.markdown.splice(bloxid,1);
 		},
-		updateMarkdown: function($event)
-		{
+		updateMarkdown: function($event){
 			this.compmarkdown = $event;
 			this.$nextTick(function () {
 				this.$refs.preview.style.minHeight = this.$refs.component.offsetHeight + 'px';
-			});			
+			});
 		},
-		switchToEditMode: function()
-		{
+		switchToEditMode: function(){
 			if(this.edit){ return; }
 			eventBus.$emit('closeComponents');
 			self = this;
-			self.$root.$data.freeze = true; 						/* freeze the data */
-		  self.$root.$data.sortdisabled = true;			/* disable sorting */
-			this.preview = 'hidden'; 								/* hide the html-preview */
+			self.$root.$data.freeze = true; 				/* freeze the data */
+		  self.$root.$data.sortdisabled = true;	/* disable sorting */
+			this.preview = 'hidden'; 							/* hide the html-preview */
 			this.edit = true;										/* show the edit-mode */
-			this.compmarkdown = self.$root.$data.blockMarkdown;		/* get markdown data */
-			this.componentType = self.$root.$data.blockType;		/* get block-type of element */
-			if(this.componentType == 'image-component')
-			{
+			this.compmarkdown = self.$root.$data.blockMarkdown; /* get markdown data */
+			this.componentType = self.$root.$data.blockType; /* get block-type of element */
+			if (this.componentType == 'image-component') {
 				setTimeout(function(){ 
-					self.$nextTick(function () 
-					{
+					self.$nextTick(function (){
 						self.$refs.preview.style.minHeight = self.$refs.component.offsetHeight + 'px';
 					});
 				}, 200);
-			}
-			else
-			{
-				this.$nextTick(function () 
-				{
+			} else {
+				this.$nextTick(function (){
 					this.$refs.preview.style.minHeight = self.$refs.component.offsetHeight + 'px';
-				});				
+				});
 			}
 		},
-		closeComponents: function()
-		{
+		closeComponents: function(){
 			this.preview = 'visible';
 			this.edit = false;
 			this.componentType = false;
-			if(this.$refs.preview)
-			{
+			if (this.$refs.preview) {
 				this.$refs.preview.style.minHeight = "auto";
 			}
 		},
-		switchToPreviewMode: function()
-		{
+		switchToPreviewMode: function(){
 			self = this;
 			self.$root.$data.freeze = false;						/* activate the data again */
 			self.$root.sortdisabled = false;			/* activate sorting again */
@@ -133,8 +120,7 @@ const contentComponent = Vue.component('content-block', {
 			publishController.errors.message = false;				/* delete all error messages */
 			this.$refs.preview.style.minHeight = "auto";
 		},
-		freezePage: function()
-		{
+		freezePage: function(){
 			this.disabled = 'disabled';
 			this.load = true;
 			publishController.errors.message = false;
@@ -142,136 +128,102 @@ const contentComponent = Vue.component('content-block', {
 			var self = this;
 			self.$root.$data.freeze = true;
 		},
-		activatePage: function()
-		{
+		activatePage: function(){
 			this.disabled = false;
 			this.load = false;
 			publishController.publishDisabled = false;
 		},
-		getData: function()
-		{
+		getData: function(){
 			self = this;
-			if(self.$root.$data.blockType != '')
-			{
+			if (self.$root.$data.blockType != '') {
 				this.switchToEditMode();
 			}
 		},
- 		submitBlock: function(){
+		submitBlock: function(){
 			var emptyline = /^\s*$(?:\r\n?|\n)/gm;
-			if(this.componentType == "code-component" || this.componentType == "math-component"){ }
-			else if(this.componentType == "ulist-component" || this.componentType == "olist-component")
-			{
+			if (this.componentType == "code-component" || this.componentType == "math-component"){ }
+			else if (this.componentType == "ulist-component" || this.componentType == "olist-component") {
 				var listend = (this.componentType == "ulist-component") ? '* \n' : '1. \n';
 				var liststyle = (this.componentType == "ulist-component") ? '* ' : '1. ';
-				
-				if(this.compmarkdown.endsWith(listend))
-				{
+
+				if (this.compmarkdown.endsWith(listend)) {
 					this.compmarkdown = this.compmarkdown.replace(listend, '');
 					this.saveBlock();
-				}
-				else
-				{
-					var mdtextarea 		= document.getElementsByTagName('textarea');
-					var start 			= mdtextarea[0].selectionStart;
-					var end 			= mdtextarea[0].selectionEnd;
-					
+				} else {
+					var mdtextarea = document.getElementsByTagName('textarea');
+					var start = mdtextarea[0].selectionStart;
+					var end = mdtextarea[0].selectionEnd;
+
 					this.compmarkdown 	= this.compmarkdown.substr(0, end) + liststyle + this.compmarkdown.substr(end);
 
 					mdtextarea[0].focus();
-					if(mdtextarea[0].setSelectionRange)
-					{
+					if (mdtextarea[0].setSelectionRange) {
 						setTimeout(function(){
 							var spacer = (this.componentType == "ulist-component") ? 2 : 3;
 							mdtextarea[0].setSelectionRange(end+spacer, end+spacer);
 						}, 1);
 					}
 				}
-			}
-			else if(this.compmarkdown.search(emptyline) > -1)
-			{
+			} else if (this.compmarkdown.search(emptyline) > -1) {
 				var checkempty = this.compmarkdown.replace(/(\r\n|\n|\r|\s)/gm,"");
-				if(checkempty == '')
-				{
+				if (checkempty == '') {
 					this.switchToPreviewMode();
-				}
-				else
-				{
+				} else {
 					this.saveBlock();
 				}
 			}
 		},
-		saveBlock: function()
-		{
-			if(this.compmarkdown == undefined || this.compmarkdown.replace(/(\r\n|\n|\r|\s)/gm,"") == '')
-			{
-				this.switchToPreviewMode();	
-			}
-			else
-			{
+		saveBlock: function(){
+			if (this.compmarkdown == undefined || this.compmarkdown.replace(/(\r\n|\n|\r|\s)/gm,"") == '') {
+				this.switchToPreviewMode();
+			} else {
 				this.freezePage();
 
 				var self = this;
-				
-/*				if(this.componentType != 'definition-component')
-				{
+
+/*				if (this.componentType != 'definition-component') {
 					var compmarkdown = this.compmarkdown.split('\n\n').join('\n');
 				}
 */				var compmarkdown = this.compmarkdown;
 
 				var params = {
-					'url':				document.getElementById("path").value,
-					'markdown':			compmarkdown,
-					'block_id':			self.$root.$data.blockId,
-					'csrf_name': 		document.getElementById("csrf_name").value,
-					'csrf_value':		document.getElementById("csrf_value").value,
+					'url':        document.getElementById("path").value,
+					'markdown':   compmarkdown,
+					'block_id':   self.$root.$data.blockId,
+					'csrf_name':  document.getElementById("csrf_name").value,
+					'csrf_value': document.getElementById("csrf_value").value,
 				};
 
-				if(this.componentType == 'image-component' && self.$root.$data.file)
-				{
+				if (this.componentType == 'image-component' && self.$root.$data.file) {
 					var url = self.$root.$data.root + '/api/v1/image';
 					var method 	= 'PUT';
-				}
-				else if(this.componentType == 'video-component')
-				{
+				} else if(this.componentType == 'video-component') {
 					var url = self.$root.$data.root + '/api/v1/video';
 					var method = 'POST';
-				}
-				else if(self.$root.$data.newblock || self.$root.$data.blockId == 99999)
-				{
+				} else if(self.$root.$data.newblock || self.$root.$data.blockId == 99999) {
 					var url = self.$root.$data.root + '/api/v1/block';
 					var method = 'POST';
-				}
-				else
-				{
+				} else {
 					var url = self.$root.$data.root + '/api/v1/block';
 					var method 	= 'PUT';
 				}
-				
-				sendJson(function(response, httpStatus)
-				{
-					if(httpStatus == 400)
-					{
+
+				sendJson(function(response, httpStatus){
+					if (httpStatus == 400) {
 						self.activatePage();
 						publishController.errors.message = "Looks like you are logged out. Please login and try again.";
-					}
-					else if(response)					
-					{
+					} else if (response)	 {
 						self.activatePage();
 
 						var result = JSON.parse(response);
-									
-						if(result.errors)
-						{
+
+						if (result.errors) {
 							publishController.errors.message = result.errors.message;
-						}
-						else
-						{
+						} else {
 							var thisBlockType = self.$root.$data.blockType;
 
 							self.switchToPreviewMode();
-							
-							if(self.$root.$data.blockId == 99999)
-							{
+							if (self.$root.$data.blockId == 99999) {
 								self.$root.$data.markdown.push(result.markdown);
 								self.$root.$data.html.push(result.content);
 
@@ -279,34 +231,29 @@ const contentComponent = Vue.component('content-block', {
 								self.$root.$data.blockType = 'markdown-component';
 								self.getData();
 								var textbox = document.querySelectorAll('textarea')[0];
-								if(textbox){ textbox.style.height = "70px"; }
-							}
-							else if(self.$root.$data.newblock)
-							{
+								if (textbox){ textbox.style.height = "70px"; }
+							} else if (self.$root.$data.newblock) {
 								self.$root.$data.html.splice(result.id,1,result.content);
 								self.$root.$data.html.splice(result.toc.id,1,result.toc);
-								self.$root.$data.markdown[result.id] = result.markdown;								
+								self.$root.$data.markdown[result.id] = result.markdown;
 
 								self.$root.$data.blockMarkdown = '';
 								self.$root.$data.blockType = '';
 								self.$root.$data.bloxOverlay = false;
 								self.$root.$data.newblock = false;
 								self.newblock = false;
-							}
-							else
-							{
+							} else {
 								self.$root.$data.markdown[result.id] = result.markdown;
 								self.$root.$data.html.splice(result.id,1,result.content);
 
-								if(result.id == 0){ self.$root.$data.title = result.content; }
+								if (result.id == 0) { self.$root.$data.title = result.content; }
 
 								self.$root.$data.blockMarkdown = '';
 								self.$root.$data.blockType = '';
 							}
 
 							/* update the table of content if in result */
-							if(result.toc)
-							{
+							if (result.toc) {
 								self.$root.$data.html.splice(result.toc.id, 1, result.toc);
 							}
 
@@ -314,8 +261,7 @@ const contentComponent = Vue.component('content-block', {
 							self.$root.checkMath(result.id);
 
 							/* check youtube here */
-							if(thisBlockType == "video-component" || thisBlockType == "image-component")
-							{
+							if (thisBlockType == "video-component" || thisBlockType == "image-component") {
 								self.$root.checkVideo(result.id);
 							}
 
@@ -323,54 +269,45 @@ const contentComponent = Vue.component('content-block', {
 							navi.getNavi();
 
 						}
-					}
-					else if(httpStatus != 200)
-					{
+					} else if (httpStatus != 200) {
 						self.activatePage();
 						publishController.errors.message = "Sorry, something went wrong. Please refresh the page and try again.";
 					}	
 				}, method, url, params);
 			}
 		},
-		deleteBlock: function(event)
-		{
+		deleteBlock: function(event){
 			this.freezePage();
-			
+
 			var bloxeditor = event.target.closest('.blox-editor');
-			
+
 			var bloxid = bloxeditor.getElementsByClassName('blox')[0].dataset.id;
-	
+
 			var self = this;
-				
+
 			var url = self.$root.$data.root + '/api/v1/block';
-				
+
 			var params = {
-				'url':				document.getElementById("path").value,
-				'block_id':			bloxid,
-				'csrf_name': 		document.getElementById("csrf_name").value,
-				'csrf_value':		document.getElementById("csrf_value").value,
+				'url':        document.getElementById("path").value,
+				'block_id':   bloxid,
+				'csrf_name':  document.getElementById("csrf_name").value,
+				'csrf_value': document.getElementById("csrf_value").value,
 			};
-				
+
 			var method 	= 'DELETE';
-				
-			sendJson(function(response, httpStatus)
-			{
-				if(httpStatus == 400)
-				{
+
+			sendJson(function(response, httpStatus){
+				if (httpStatus == 400) {
 					self.activatePage();
 				}
-				if(response)
-				{
+				if (response) {
 					self.activatePage();
-					
+
 					var result = JSON.parse(response);
-	
-					if(result.errors)
-					{
+
+					if (result.errors) {
 						publishController.errors.message = result.errors;
-					}
-					else
-					{	
+					} else {
 						self.switchToPreviewMode();
 						self.$root.$data.html.splice(bloxid,1);
 						self.$root.$data.markdown.splice(bloxid,1);
@@ -378,11 +315,10 @@ const contentComponent = Vue.component('content-block', {
 						self.$root.$data.blockType = '';
 
 						/* update the table of content if in result */
-						if(result.toc)
-						{
+						if (result.toc) {
 							self.$root.$data.html.splice(result.toc.id, 1, result.toc);
 						}
-						
+
 						/* update the navigation and mark navigation item as modified */
 						navi.getNavi();
 					}
@@ -400,8 +336,7 @@ const titleComponent = Vue.component('title-component', {
 		autosize(document.querySelectorAll('textarea'));
 	},
 	methods: {
-		updatemarkdown: function(event)
-		{
+		updatemarkdown: function(event){
 			this.$emit('updatedMarkdown', event.target.value);
 		},
 	},
@@ -418,8 +353,7 @@ const markdownComponent = Vue.component('markdown-component', {
 		autosize(document.querySelectorAll('textarea'));
 	},
 	methods: {
-		updatemarkdown: function(event)
-		{
+		updatemarkdown: function(event){
 			this.$emit('updatedMarkdown', event.target.value);
 		},
 	},
@@ -437,8 +371,7 @@ const hrComponent = Vue.component('hr-component', {
 		this.$emit('updatedMarkdown', '---');
 	},
 	methods: {
-		updatemarkdown: function(event)
-		{
+		updatemarkdown: function(event){
 			this.$emit('updatedMarkdown', event.target.value);
 		},
 	},
@@ -456,8 +389,7 @@ const tocComponent = Vue.component('toc-component', {
 		this.$emit('updatedMarkdown', '[TOC]');
 	},
 	methods: {
-		updatemarkdown: function(event)
-		{
+		updatemarkdown: function(event){
 			this.$emit('updatedMarkdown', event.target.value);
 		},
 	},
@@ -477,8 +409,7 @@ const codeComponent = Vue.component('code-component', {
 	},
 	mounted: function(){
 		this.$refs.markdown.focus();
-		if(this.compmarkdown)
-		{
+		if(this.compmarkdown) {
 			var codeblock = this.compmarkdown.replace("````\n", "");
 			codeblock = codeblock.replace("```\n", "");
 			codeblock = codeblock.replace("\n````", "");
@@ -486,19 +417,17 @@ const codeComponent = Vue.component('code-component', {
 			codeblock = codeblock.replace("\n\n", "\n");
 			this.codeblock = codeblock;
 		}
-		this.$nextTick(function () {
+		this.$nextTick(function (){
 			autosize(document.querySelectorAll('textarea'));
-		});	
+		});
 	},
 	methods: {
-		createmarkdown: function(event)
-		{
+		createmarkdown: function(event){
 			this.codeblock = event.target.value;
 			var codeblock = '````\n' + event.target.value + '\n````';
 			this.updatemarkdown(codeblock);
 		},
-		updatemarkdown: function(codeblock)
-		{
+		updatemarkdown: function(codeblock){
 			this.$emit('updatedMarkdown', codeblock);
 		},
 	},
@@ -518,25 +447,22 @@ const quoteComponent = Vue.component('quote-component', {
 	},
 	mounted: function(){
 		this.$refs.markdown.focus();
-		if(this.compmarkdown)
-		{
+		if (this.compmarkdown) {
 			var quote = this.compmarkdown.replace("> ", "");
 			quote = this.compmarkdown.replace(">", "");
 			this.quote = quote;
 		}
-		this.$nextTick(function () {
+		this.$nextTick(function(){
 			autosize(document.querySelectorAll('textarea'));
 		});	
 	},
 	methods: {
-		createmarkdown: function(event)
-		{
+		createmarkdown: function(event){
 			this.quote = event.target.value;
 			var quote = '> ' + event.target.value;
 			this.updatemarkdown(quote);
 		},
-		updatemarkdown: function(quote)
-		{
+		updatemarkdown: function(quote){
 			this.$emit('updatedMarkdown', quote);
 		},
 	},
@@ -550,39 +476,31 @@ const ulistComponent = Vue.component('ulist-component', {
 				'</div>',
 	mounted: function(){
 		this.$refs.markdown.focus();
-		if(!this.compmarkdown)
-		{
+		if (!this.compmarkdown) {
 			this.compmarkdown = '* ';
-		}
-		else
-		{
+		} else {
 			var lines = this.compmarkdown.split("\n");
 			var length = lines.length
 			var md = '';
 
-			for(i = 0; i < length; i++)
-			{
+			for (i = 0; i < length; i++) {
 				var clean = lines[i];
 				clean = clean.replace(/^- /, '* ');
 				clean = clean.replace(/^\+ /, '* ');
-				if(i == length-1)
-				{
+				if (i == length-1) {
 					md += clean;
-				}
-				else
-				{
+				} else {
 					md += clean + '\n';
 				}
 			}
 			this.compmarkdown = md;
 		}
-		this.$nextTick(function () {
+		this.$nextTick(function(){
 			autosize(document.querySelectorAll('textarea'));
 		});	
 	},
 	methods: {
-		updatemarkdown: function(event)
-		{
+		updatemarkdown: function(event){
 			this.$emit('updatedMarkdown', event.target.value);
 		},
 	},
@@ -596,17 +514,15 @@ const olistComponent = Vue.component('olist-component', {
 				'</div>',
 	mounted: function(){
 		this.$refs.markdown.focus();
-		if(!this.compmarkdown)
-		{
+		if (!this.compmarkdown) {
 			this.compmarkdown = '1. ';
 		}
-		this.$nextTick(function () {
+		this.$nextTick(function(){
 			autosize(document.querySelectorAll('textarea'));
 		});
 	},
 	methods: {
-		updatemarkdown: function(event)
-		{
+		updatemarkdown: function(event){
 			this.$emit('updatedMarkdown', event.target.value);
 		},
 	},
@@ -627,31 +543,24 @@ const headlineComponent = Vue.component('headline-component', {
 		},
 	mounted: function(){
 		this.$refs.markdown.focus();
-		if(!this.compmarkdown)
-		{
+		if (!this.compmarkdown) {
 			this.compmarkdown = '## ';
 			this.level = '2';
 			this.hlevel = 'h2';
-		}
-		else
-		{
+		} else {
 			this.level = this.getHeadlineLevel(this.compmarkdown);
 			this.hlevel = 'h' + this.level;
 		}
 	},
 	methods: {
-		updatemarkdown: function(event)
-		{
+		updatemarkdown: function(event){
 			var headline = event.target.value;
 			this.level = this.getHeadlineLevel(headline);
-			if(this.level > 6)
-			{
+			if (this.level > 6) {
 				headline = '######' + headline.substr(this.level);
 				this.level = 6;
 				this.compmarkdown = headline;
-			}
-			else if(this.level < 2)
-			{
+			} else if (this.level < 2) {
 				headline = '##' + headline.substr(this.level);
 				this.level = 2;
 				this.compmarkdown = headline;
@@ -659,28 +568,23 @@ const headlineComponent = Vue.component('headline-component', {
 			this.hlevel = 'h' + this.level;
 			this.$emit('updatedMarkdown', headline);
 		},
-		headlinedown: function()
-		{
+		headlinedown: function(){
 			this.level = this.getHeadlineLevel(this.compmarkdown);
-			if(this.level < 6)
-			{
+			if (this.level < 6) {
 				this.compmarkdown = this.compmarkdown.substr(0, this.level) + '#' + this.compmarkdown.substr(this.level);
 				this.level = this.level+1;
-				this.hlevel = 'h' + this.level;	
-			}
-			else
-			{
+				this.hlevel = 'h' + this.level;
+			} else {
 				this.compmarkdown = '##' + this.compmarkdown.substr(this.level);
 				this.level = 2;
-				this.hlevel = 'h2';				
+				this.hlevel = 'h2';
 			}
 			this.$emit('updatedMarkdown', this.compmarkdown);
 		},
-		getHeadlineLevel: function(str)
-		{
+		getHeadlineLevel: function(str){
 			var count = 0;
-			for(var i = 0; i < str.length; i++){
-				if(str[i] != '#'){ return count }
+			for (var i = 0; i < str.length; i++) {
+				if (str[i] != '#'){ return count }
 				count++;
 			}
 		  return count;
@@ -741,25 +645,22 @@ const tableComponent = Vue.component('table-component', {
 				'</div>',
 	mounted: function(){
 		this.$refs.markdown.focus();
-		if(this.compmarkdown)
-		{
+		if (this.compmarkdown) {
 			var table = [];
 			var lines = this.compmarkdown.split("\n");
 			var length = lines.length
 			var c = 1;
-			
-			for(i = 0; i < length; i++)
-			{
-				if(i == 1){ continue }
-				
+
+			for (i = 0; i < length; i++) {
+				if (i == 1){ continue }
+
 				var line = lines[i].trim();
 				var row = line.split("|").map(function(cell){
 					return cell.trim();
 				});
-				if(row[0] == ''){ row.shift() }
-				if(row[row.length-1] == ''){ row.pop() }
-				if(i == 0)
-				{
+				if (row[0] == ''){ row.shift() }
+				if (row[row.length-1] == ''){ row.pop() }
+				if (i == 0) {
 					var rlength = row.length;
 					var row0 = [];
 					for(y = 0; y <= rlength; y++) { row0.push(y) }
@@ -773,129 +674,105 @@ const tableComponent = Vue.component('table-component', {
 		}
 	},
 	methods: {
-		updatedata: function(event,col,row)
-		{
-			this.table[row][col] = event.target.innerText;			
+		updatedata: function(event,col,row){
+			this.table[row][col] = event.target.innerText;
 			this.markdowntable();
 		},
-		switchcolumnbar(value)
-		{
+		switchcolumnbar(value){
 			this.rowbar = false;
 			(this.columnbar == value || value == 0) ? this.columnbar = false : this.columnbar = value;
 		},
-		switchrowbar(value)
-		{
+		switchrowbar(value){
 			this.columnbar = false;
 			(this.rowbar == value || value == 0 || value == 1 )? this.rowbar = false : this.rowbar = value;
 		},
-		addaboverow: function(index)
-		{
+		addaboverow: function(index){
 			var row = [];
 			var cols = this.table[0].length;
 			for(var i = 0; i < cols; i++){ row.push("new"); }
 			this.table.splice(index,0,row);
 			this.reindexrows();
 		},
-		addbelowrow: function(index)
-		{
+		addbelowrow: function(index){
 			var row = [];
 			var cols = this.table[0].length;
 			for(var i = 0; i < cols; i++){ row.push("new"); }
 			this.table.splice(index+1,0,row);
 			this.reindexrows();
 		},
-		deleterow: function(index)
-		{
+		deleterow: function(index){
 			this.table.splice(index,1);
 			this.reindexrows();
 		},
-		addrightcolumn: function(index)
-		{
+		addrightcolumn: function(index){
 			var tableLength = this.table.length;
-			for (var i = 0; i < tableLength; i++)
-			{
+			for (var i = 0; i < tableLength; i++) {
 				this.table[i].splice(index+1,0,"new");
 			}
 			this.reindexcolumns();
 		},
-		addleftcolumn: function(index)
-		{
+		addleftcolumn: function(index){
 			var tableLength = this.table.length;
-			for (var i = 0; i < tableLength; i++)
-			{
+			for (var i = 0; i < tableLength; i++) {
 				this.table[i].splice(index,0,"new");
 			}
 			this.reindexcolumns();
 		},
-		deletecolumn: function(index)
-		{
+		deletecolumn: function(index){
 			var tableLength = this.table.length;
-			for (var i = 0; i < tableLength; i++)
-			{
+			for (var i = 0; i < tableLength; i++) {
 				this.table[i].splice(index,1);
 			}
 			this.reindexcolumns();
 		},
-		reindexrows: function()
-		{
+		reindexrows: function(){
 			var tableRows = this.table.length;
-			for (var i = 0; i < tableRows; i++)
-			{
+			for (var i = 0; i < tableRows; i++) {
 				Vue.set(this.table[i], 0, i);
 			}
 			this.tablekey +=1;
 			this.markdowntable();
 		},
-		reindexcolumns: function()
-		{
+		reindexcolumns: function(){
 			var tableColumns = this.table[0].length;
-			for (var i = 0; i < tableColumns; i++)
-			{
+			for (var i = 0; i < tableColumns; i++) {
 				Vue.set(this.table[0], i, i);
 			}
 			this.tablekey +=1;
 			this.markdowntable();
 		},
-		markdowntable: function()
-		{
+		markdowntable: function(){
 			var markdown = '';
 			var separator = '\n|';
 			var rows = this.table.length;
 			var cols = this.table[0].length;
-			
-			for(var i = 0; i < cols; i++)
-			{
-				if(i == 0){ continue; }
+
+			for (var i = 0; i < cols; i++) {
+				if (i == 0){ continue; }
 				separator += '---|';
 			}
-			
-			for(var i = 0; i < rows; i++)
-			{
+
+			for (var i = 0; i < rows; i++) {
 				var row = this.table[i];
 
-				if(i == 0){ continue; }
-				
-				for(var y = 0; y < cols; y++)
-				{					
-					if(y == 0){ continue; }
-					
+				if (i == 0){ continue; }
+
+				for (var y = 0; y < cols; y++) {
+					if (y == 0){ continue; }
+
 					var value = row[y].trim();
-					
-					if(y == 1)
-					{
+
+					if (y == 1) {
 						markdown += '\n| ' + value + ' | ';
-					}
-					else
-					{
+					} else {
 						markdown += value + ' | ';
 					}
 				}
-				if(i == 1) { markdown = markdown + separator; }
+				if (i == 1) { markdown = markdown + separator; }
 			}
 			this.$emit('updatedMarkdown', markdown);
 		},
-		updatemarkdown: function(event)
-		{
+		updatemarkdown: function(event){
 			this.$emit('updatedMarkdown', event.target.value);
 		},
 	},
@@ -923,61 +800,49 @@ const definitionComponent = Vue.component('definition-component', {
 				'<div v-if="load" class="loadwrapper"><span class="load"></span></div>' +
 				'</div>',
 	mounted: function(){
-		if(this.compmarkdown)
-		{
+		if (this.compmarkdown) {
 			var definitionList = this.compmarkdown.replace("\r\n", "\n");
 			definitionList = definitionList.replace("\r", "\n");
 			definitionList = definitionList.split("\n\n");
 
-			for(var i=0; i < definitionList.length; i++)
-			{
+			for (var i=0; i < definitionList.length; i++) {
 				var definition = definitionList[i].split("\n");
-				
+
 				var term = definition[0];
 				var description = definition[1];
 				var id = i;
 
-				if(description && description.substring(0, 2) == ": ")
-				{
+				if (description && description.substring(0, 2) == ": ") {
 					this.definitionList.push({'term': term ,'description': description.substring(2), 'id': id});
 				}
 			}
-		}
-		else
-		{
+		} else {
 			this.definitionList.push({'term': '', 'description': '', 'id': 0});
 		}
 	},
 	methods: {
-		updateterm: function(event, dindex)
-		{
+		updateterm: function(event, dindex){
 			this.definitionList[dindex].term = event.target.value;
 		},
-		updatedescription: function(event, dindex)
-		{
+		updatedescription: function(event, dindex) {
 			this.definitionList[dindex].description = event.target.value;
 		},
-		addDefinition: function()
-		{
+		addDefinition: function(){
 			var id = this.definitionList.length;
 			this.definitionList.push({'term': '', 'description': '', 'id': id});
 			this.updateMarkdown();
 		},
-		deleteDefinition: function(dindex)
-		{
+		deleteDefinition: function(dindex){
 			this.definitionList.splice(dindex,1);
 			this.updateMarkdown();
 		},
-		moveDefinition: function(evt)
-		{
+		moveDefinition: function(evt){
 			this.updateMarkdown();
 		},
-		updateMarkdown: function()
-		{
+		updateMarkdown: function(){
 			var length = this.definitionList.length;
 			var markdown = '';
-			for(i = 0; i < length; i++)
-			{
+			for (i = 0; i < length; i++) {
 				markdown = markdown + this.definitionList[i].term + "\n: " + this.definitionList[i].description + "\n\n";
 			}
 			this.$emit('updatedMarkdown', markdown);
@@ -999,30 +864,26 @@ const mathComponent = Vue.component('math-component', {
 	},
 	mounted: function(){
 		this.$refs.markdown.focus();
-		if(this.compmarkdown)
-		{
+		if (this.compmarkdown) {
 			var dollarMath = new RegExp(/^\$\$[\S\s]+\$\$$/m);
 			var bracketMath = new RegExp(/^\\\[[\S\s]+\\\]$/m);
 
-			if(dollarMath.test(this.compmarkdown) || bracketMath.test(this.compmarkdown))
-			{
+			if (dollarMath.test(this.compmarkdown) || bracketMath.test(this.compmarkdown)) {
 				var mathExpression = this.compmarkdown.substring(2,this.compmarkdown.length-2);
 				this.mathblock = mathExpression.trim(); 
 			}
 		}
-		this.$nextTick(function () {
+		this.$nextTick(function(){
 			autosize(document.querySelectorAll('textarea'));
 		});
 	},
 	methods: {
-		createmarkdown: function(event)
-		{
+		createmarkdown: function(event){
 			this.codeblock = event.target.value;
 			var codeblock = '$$\n' + event.target.value + '\n$$';
 			this.updatemarkdown(codeblock);
 		},
-		updatemarkdown: function(codeblock)
-		{
+		updatemarkdown: function(codeblock){
 			this.$emit('updatedMarkdown', codeblock);
 		},
 	},
@@ -1036,8 +897,7 @@ const videoComponent = Vue.component('video-component', {
 				'<div v-if="load" class="loadwrapper"><span class="load"></span></div>' +
 				'</div>',
 	methods: {
-		updatemarkdown: function(event)
-		{
+		updatemarkdown: function(event) {
 			this.$emit('updatedMarkdown', event.target.value);
 		},
 	},
@@ -1076,27 +936,22 @@ const imageComponent = Vue.component('image-component', {
 		}
 	},
 	mounted: function(){
-		
 		this.$refs.markdown.focus();
 
-		if(this.compmarkdown)
-		{
+		if (this.compmarkdown) {
 			this.imgmeta = true;
-			
+
 			var imgmarkdown = this.compmarkdown;
-									
 			var imgcaption = imgmarkdown.match(/\*.*?\*/);
-			if(imgcaption){
+			if (imgcaption) {
 				this.imgcaption = imgcaption[0].slice(1,-1);
 				imgmarkdown = imgmarkdown.replace(this.imgcaption,'');
 				imgmarkdown = imgmarkdown.replace(/\r?\n|\r/g,'');
 			}
 			
-			if(this.compmarkdown[0] == '[')
-			{
+			if (this.compmarkdown[0] == '[') {
 				var imglink = this.compmarkdown.match(/\(.*?\)/g);
-				if(imglink[1])
-				{
+				if (imglink[1]) {
 					this.imglink = imglink[1].slice(1,-1);
 					imgmarkdown = imgmarkdown.replace(imglink[1],'');
 					imgmarkdown = imgmarkdown.slice(1, -1);
@@ -1104,214 +959,159 @@ const imageComponent = Vue.component('image-component', {
 			}
 
 			var imgtitle = imgmarkdown.match(/\".*?\"/);
-			if(imgtitle)
-			{
+			if (imgtitle) {
 				this.imgtitle = imgtitle[0].slice(1,-1);
 				imgmarkdown = imgmarkdown.replace(imgtitle[0], '');
 			}
-			
+
 			var imgalt = imgmarkdown.match(/\[.*?\]/);
-			if(imgalt)
-			{
+			if (imgalt) {
 				this.imgalt = imgalt[0].slice(1,-1);
 			}
 
 			var imgattr = imgmarkdown.match(/\{.*?\}/);
-			if(imgattr)
-			{
+			if (imgattr) {
 				imgattr = imgattr[0].slice(1,-1);
 				imgattr = imgattr.split(' ');
-				for (var i = 0; i < imgattr.length; i++)
-				{
-					if(imgattr[i].charAt(0) == '.')
-					{
+				for (var i = 0; i < imgattr.length; i++) {
+					if (imgattr[i].charAt(0) == '.') {
 						this.imgclass = imgattr[i].slice(1);
-					}
-					else if(imgattr[i].charAt(0)  == '#')
-					{
+					} else if (imgattr[i].charAt(0)  == '#') {
 						this.imgid = imgattr[i].slice(1);
 					}
 				}
 			}
 
 			var imgpreview = imgmarkdown.match(/\(.*?\)/);
-			if(imgpreview)
-			{
+			if (imgpreview) {
 				this.imgpreview = imgpreview[0].slice(1,-1);
 				this.imgfile = this.imgpreview;
 			}
 		}
 	},
 	methods: {
-		isChecked: function(classname)
-		{
-			if(this.imgclass == classname)
-			{
+		isChecked: function(classname){
+			if (this.imgclass == classname) {
 				return ' checked';
 			}
 		},
-		updatemarkdown: function(event)
-		{
+		updatemarkdown: function(event){
 			this.$emit('updatedMarkdown', event.target.value);
 		},
-		createmarkdown: function()
-		{
+		createmarkdown: function(){
 			var errors = false;
-			
-			if(this.imgalt.length < 101)
-			{
+			if (this.imgalt.length < 101) {
 				imgmarkdown = '![' + this.imgalt + ']';
-			}
-			else
-			{
+			} else {
 				errors = 'Maximum size of image alt-text is 100 characters';
 				imgmarkdown = '![]';
 			}
-			
-			if(this.imgtitle != '')
-			{
-				if(this.imgtitle.length < 101)
-				{
+
+			if (this.imgtitle != '') {
+				if (this.imgtitle.length < 101) {
 					imgmarkdown = imgmarkdown + '(' + this.imgfile + ' "' + this.imgtitle + '")';
-				}
-				else
-				{
+				} else {
 					errors = 'Maximum size of image title is 100 characters';
 				}
-			}
-			else
-			{
+			} else {
 				imgmarkdown = imgmarkdown + '(' + this.imgfile + ')';		
 			}
 			
 			var imgattr = '';
-			if(this.imgid != '')
-			{
-				if(this.imgid.length < 100)
-				{
+			if (this.imgid != '') {
+				if (this.imgid.length < 100) {
 					imgattr = imgattr + '#' + this.imgid + ' '; 
-				}
-				else
-				{
+				} else {
 					errors = 'Maximum size of image id is 100 characters';
 				}
 			}
-			if(this.imgclass != '')
-			{
-				if(this.imgclass.length < 100)
-				{
+			if (this.imgclass != '') {
+				if (this.imgclass.length < 100) {
 					imgattr = imgattr + '.' + this.imgclass; 
-				}
-				else
-				{
+				} else {
 					errors = 'Maximum size of image class is 100 characters';
 				}
 			}
-			if(this.imgid != '' || this.imgclass != '')
-			{
+			if (this.imgid != '' || this.imgclass != '') {
 				imgmarkdown = imgmarkdown + '{' + imgattr + '}';
 			}
-			
-			if(this.imglink != '')
-			{
-				if(this.imglink.length < 101)
-				{
+
+			if (this.imglink != '') {
+				if (this.imglink.length < 101) {
 					imgmarkdown = '[' + imgmarkdown + '](' + this.imglink + ')';
-				}
-				else
-				{
+				} else {
 					errors = 'Maximum size of image link is 100 characters';
 				}
 			}
-						
-			if(this.imgcaption != '')
-			{
-				if(this.imgcaption.length < 140)
-				{
+
+			if (this.imgcaption != '') {
+				if (this.imgcaption.length < 140) {
 					imgmarkdown = imgmarkdown + '\n*' + this.imgcaption + '*'; 
-				}
-				else
-				{
+				} else {
 					errors = 'Maximum size of image caption is 140 characters';
 				}
 			}
-						
-			if(errors)
-			{
+
+			if (errors) {
 				this.$parent.freezePage();
 				publishController.errors.message = errors;
-			}
-			else
-			{
+			} else {
 				publishController.errors.message = false;
 				this.$parent.activatePage();
 				this.$emit('updatedMarkdown', imgmarkdown);
 			}
 		},
-		onFileChange: function( e )
-		{
-			if(e.target.files.length > 0)
-			{
+		onFileChange: function(e){
+			if (e.target.files.length > 0) {
 				let imageFile = e.target.files[0];
 				let size = imageFile.size / 1024 / 1024;
-				
-				if (!imageFile.type.match('image.*'))
-				{
+
+				if (!imageFile.type.match('image.*')) {
 					publishController.errors.message = "Only images are allowed.";
-				} 
-				else if (size > this.maxsize)
-				{
+				} else if (size > this.maxsize) {
 					publishController.errors.message = "The maximal size of images is " + this.maxsize + " MB";
-				}
-				else
-				{
-					self = this;					
+				} else {
+					self = this;
 					this.$parent.freezePage();
 					this.$root.$data.file = true;
 					this.load = true;
-					
+
 					let reader = new FileReader();
 					reader.readAsDataURL(imageFile);
-					reader.onload = function(e) {
+					reader.onload = function(e){
 						self.imgpreview = e.target.result;
 						self.$emit('updatedMarkdown', '![](imgplchldr)');
-						
-						
+
+
 						/* load image to server */
 						var url = self.$root.$data.root + '/api/v1/image';
-						
+
 						var params = {
 							'url':				document.getElementById("path").value,
 							'image':			e.target.result,
 							'csrf_name': 		document.getElementById("csrf_name").value,
 							'csrf_value':		document.getElementById("csrf_value").value,
 						};
-									
+
 						var method 	= 'POST';
 						
-						sendJson(function(response, httpStatus)
-						{							
-							if(httpStatus == 400)
-							{
+						sendJson(function(response, httpStatus){
+							if (httpStatus == 400) {
 								self.$parent.activatePage();
 							}
-							if(response)
-							{
+							if (response) {
 								self.$parent.activatePage();
 								self.load = false;
-								
+
 								var result = JSON.parse(response);
 
-								if(result.errors)
-								{
+								if (result.errors) {
 									publishController.errors.message = result.errors;
-								}
-								else
-								{
+								} else {
 									self.imgmeta = true;
 								}
 							}
-						}, method, url, params);						
+						}, method, url, params);
 					}
 				}
 			}
@@ -1358,33 +1158,26 @@ let editor = new Vue({
 
 		publishController.visual = true;
 
-		var self = this;		
-		
+		var self = this;
 		var url = this.root + '/api/v1/article/html';
-		
+
 		var params = {
 			'url':				document.getElementById("path").value,
 			'csrf_name': 		document.getElementById("csrf_name").value,
 			'csrf_value':		document.getElementById("csrf_value").value,
 		};
-		
+
 		var method 	= 'POST';
 
-		sendJson(function(response, httpStatus)
-		{
-			if(httpStatus == 400)
-			{
+		sendJson(function(response, httpStatus){
+			if (httpStatus == 400) {
 			}
-			if(response)
-			{
+			if (response) {
 				var result = JSON.parse(response);
-				
-				if(result.errors)
-				{
+
+				if (result.errors) {
 					self.errors.title = result.errors;
-				}
-				else
-				{
+				} else {
 					var contenthtml = result.data;
 					self.title = contenthtml[0];
 					self.html = contenthtml;
@@ -1393,40 +1186,31 @@ let editor = new Vue({
 				}
 			}
 		}, method, url, params);
-		
-		var url = this.root + '/api/v1/article/markdown';
-		
-		sendJson(function(response, httpStatus)
-		{
-			if(httpStatus == 400)
-			{
-			}
-			if(response)
-			{
 
+		var url = this.root + '/api/v1/article/markdown';
+
+		sendJson(function(response, httpStatus){
+			if (httpStatus == 400) {
+			}
+			if (response) {
 				var result = JSON.parse(response);
-				
-				if(result.errors)
-				{
+
+				if (result.errors) {
 					self.errors.title = result.errors;
-				}
-				else
-				{
+				} else {
 					self.markdown = result.data;
-					
+
 					/* make math plugin working */
 					if (typeof renderMathInElement === "function") { 
-						self.$nextTick(function () {
+						self.$nextTick(function(){
 							renderMathInElement(document.body);
-						});		
+						});
 					}
 
 					/* check for youtube videos */
-					if (typeof typemillUtilities !== "undefined")
-					{
+					if (typeof typemillUtilities !== "undefined") {
 						setTimeout(function(){ 
-							self.$nextTick(function () 
-							{
+							self.$nextTick(function() {
 								typemillUtilities.start();
 							});
 						}, 200);
@@ -1436,11 +1220,9 @@ let editor = new Vue({
 		}, method, url, params);
 	},
 	methods: {
-		onStart: function(evt)
-		{
+		onStart: function(evt){
 		},
-		moveBlock: function(evt)
-		{
+		moveBlock: function(evt){
 			var params = {
 				'url':			document.getElementById("path").value,
 				'old_index': 	evt.oldIndex,
@@ -1452,37 +1234,28 @@ let editor = new Vue({
 
 			var url = this.root + '/api/v1/moveblock';
 			var self = this;
-			
+
 			var method 	= 'PUT';
-			
-			sendJson(function(response, httpStatus)
-			{
-				if(httpStatus == 400)
-				{
+
+			sendJson(function(response, httpStatus){
+				if (httpStatus == 400) {
 				}
-				if(response)
-				{
-				
+				if (response) {
 					var result = JSON.parse(response);
 
-					if(result.errors)
-					{
+					if (result.errors) {
 						publishController.errors.message = result.errors;
 						publishController.publishDisabled = false;
-					}
-					else
-					{
+					} else {
 						self.freeze = false;
-
 						self.markdown = result.markdown;
 						self.blockMarkdown = '';
 						self.blockType = '';
 
-						if(result.toc)
-						{
+						if (result.toc) {
 							self.html.splice(result.toc.id, 1, result.toc);
 						}
-						
+
 						publishController.publishDisabled = false;
 						publishController.publishResult = "";
 
@@ -1495,52 +1268,40 @@ let editor = new Vue({
 				}
 			}, method, url, params);
 		},
-		setData: function(event, blocktype, body)
-		{
+		setData: function(event, blocktype, body){
 			// change this, not needed anymore.
 			this.blockId = event.currentTarget.dataset.id;
 			this.blockMarkdown = this.markdown[this.blockId];
-			if(blocktype)
-			{
+			if (blocktype) {
 				this.blockType = blocktype;
-			}
-			else if(this.blockId == 0)
-			{ 
+			} else if (this.blockId == 0) {
 				this.blockType = "title-component"
-			}
-			else 
-			{
+			} else {
 				this.blockType = this.determineBlockType(this.blockMarkdown);
 			}
 		},
-		clearData: function(event)
-		{
+		clearData: function(event){
 			this.blockId = event.currentTarget.dataset.id;
 			this.blockMarkdown = this.markdown[this.blockId];
 		},
-		hideModal: function()
-		{
+		hideModal: function(){
 			this.addblock = false;
 		},
-		determineBlockType: function(block)
-		{			
-			if(block.match(/^\d+\./)){ return "olist-component" }
-			
+		determineBlockType: function(block){
+			if (block.match(/^\d+\./)){ return "olist-component" }
+
 			var lines = block.split("\n");
-			if(lines.length > 1 && lines[1].substr(0,2) == ': ')
-			{
+			if (lines.length > 1 && lines[1].substr(0,2) == ': ') {
 				return "definition-component";
-			}
-			else if(lines.length > 2 && lines[0].indexOf('|') != -1 && /[\-\|: ]{3,}$/.test(lines[1]))
-			{
+			} else if (lines.length > 2 && lines[0].indexOf('|') != -1 && /[\-\|: ]{3,}$/.test(lines[1])) {
 				return "table-component";
 			}
-			
+
 			var firstChar = block[0];
 			var secondChar = block[1];
 			var thirdChar = block[2];
-			
-			switch(firstChar){
+
+			switch (firstChar) {
 				case ">":
 					return "quote-component";
 					break;
@@ -1548,66 +1309,58 @@ let editor = new Vue({
 					return "headline-component";
 					break;
 				case "!":
-					if(secondChar == "[") { return "image-component" }
+					if (secondChar == "[") { return "image-component" }
 					break;
 				case "[":
-					if(secondChar == "!" && thirdChar == "[") { return "image-component" } else { return "markdown-component" }
+					if (secondChar == "!" && thirdChar == "[") { return "image-component" } else { return "markdown-component" }
 					break;
 				case "\\":
-					if(secondChar == "["){ return "math-component" } else { return "markdown-component"; }
+					if (secondChar == "[") { return "math-component" } else { return "markdown-component"; }
 					break;
 				case "$":
-						if(secondChar == "$"){ return "math-component" } else { return "markdown-component"; }
+						if (secondChar == "$") { return "math-component" } else { return "markdown-component"; }
 						break;
 					case "`":
-					if(secondChar == "`" && thirdChar == "`") { return "code-component" } else { return "markdown-component" }
+					if (secondChar == "`" && thirdChar == "`") { return "code-component" } else { return "markdown-component" }
 					break;
 				case "*":
 				case "-":
 				case "+":
-					if(secondChar == " "){ return "ulist-component" } else { return "markdown-component" }
+					if (secondChar == " ") { return "ulist-component" } else { return "markdown-component" }
 					break;
 				default:
 					return 'markdown-component';
 			}
 		},
-		checkMath(elementid)
-		{
+		checkMath(elementid) {
 				/* make math plugin working */
-				if (typeof renderMathInElement === "function")
-				{
-					self.$nextTick(function () {
+				if (typeof renderMathInElement === "function") {
+					self.$nextTick(function(){
 						renderMathInElement(document.getElementById("blox-"+elementid));
 					});
 				}
 				if (typeof MathJax !== false) { 
-					self.$nextTick(function () {
+					self.$nextTick(function(){
 						MathJax.Hub.Queue(["Typeset",MathJax.Hub,"blox-"+elementid]);
 					});
 				}
 		},
-		initiateVideo()
-		{
+		initiateVideo() {
 			/* check for youtube videos */
-			if (typeof typemillUtilities !== "undefined")
-			{
-				this.$nextTick(function () {
+			if (typeof typemillUtilities !== "undefined") {
+				this.$nextTick(function(){
 						typemillUtilities.start();
 				});
 			}
 		},
-		checkVideo(elementid)
-		{
+		checkVideo(elementid) {
 			/* check for youtube videos */
 			var element = document.getElementById("blox-"+elementid);
-			if(element && typeof typemillUtilities !== "undefined")
-			{
+			if (element && typeof typemillUtilities !== "undefined") {
 				imageElement = element.getElementsByClassName("youtube");
-				if(imageElement[0])
-				{
-					setTimeout(function(){ 
-						self.$nextTick(function () 
-						{
+				if (imageElement[0]) {
+					setTimeout(function(){
+						self.$nextTick(function(){
 								typemillUtilities.addYoutubePlayButton(imageElement[0]);
 						});
 					}, 300);
@@ -1615,4 +1368,5 @@ let editor = new Vue({
 			}
 		}
 	}
+
 });

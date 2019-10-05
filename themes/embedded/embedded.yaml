@@ -1,0 +1,115 @@
+name: Embedded Theme
+version: 0.0.1
+description: A theme based on Typemill to be embedded within other systems. Responsive, minimal and without any dependencies. It uses the system fonts Calibri and Helvetica. No JavaScript is used. 
+author: Ryan R. Smith
+homepage: https://www.webuxr.com
+licence: MIT
+
+settings:
+  chapter: Section
+  start: Start
+  modified: true
+  modifiedText: 'Last updated'
+  modifiedFormat: 'Y-m-d'
+  authorIntro: 'Author'
+  images:
+    live:
+      width: 820
+
+forms:
+  fields:
+
+    chapter:
+      type: text
+      label: Text For Chapter
+      placeholder: Add Name for Chapter
+
+    start:
+      type: text
+      label: Label For Start Button
+      placeholder: Add Label for Start-Button
+      required: true
+
+    chapnum:
+      type: checkbox
+      label: Chapter Numbers
+      checkboxlabel: Count chapters in navigation?
+
+    fieldset0:
+      type: fieldset
+      legend: Author
+      fields:
+        authorPosition:
+          type: checkboxlist
+          label: Position of Author
+          options:
+            top: Top
+            bottom: Bottom
+
+        authorIntro:
+          type: text
+          label: Author Intro
+          placeholder: Author
+
+    fieldset1:
+      type: fieldset
+      legend: Last Modified
+      fields:
+        modifiedPosition:
+          type: checkboxlist
+          label: Position of Modified Text
+          options:
+            top: Top
+            bottom: Bottom
+
+        modifiedText:
+          type: text
+          label: Last Modified Text
+          placeholder: Last Updated
+
+        modifiedFormat:
+          type: select
+          label: Last Modified Format
+          placeholder: 'Add name of theme'
+          options:
+            'm/d/Y': 01/20/2020
+            'd.m.Y': 20.01.2020
+
+    fieldset2:
+      type: fieldset
+      legend: Share
+      fields:
+        socialPosition:
+          type: checkboxlist
+          label: Position of Share-Buttons
+          options:
+            top: Top
+            bottom: Bottom
+
+        socialButtons:
+          type: checkboxlist
+          label: Select Share Buttons
+          options:
+            facebook: Facebook
+            twitter: Twitter
+            xing: Xing
+            linkedin: Linkedin
+            whatsapp: WhatsApp
+            mail: Mail
+
+    fieldset3:
+      type: fieldset
+      legend: GitHub
+      fields:
+        gitPosition:
+          type: checkboxlist
+          label: Position of Git Edit Link
+          options:
+            top: Top
+            bottom: Bottom
+
+        gitlink:
+          type: text
+          label: Link to git repository
+          placeholder: https://github.com/webuxr/srvrnova-typemill/docroot
+          help: Please add the base url to the text repository e.g. on github.

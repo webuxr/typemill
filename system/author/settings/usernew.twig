@@ -2,17 +2,17 @@
 {% block title %}User{% endblock %}
 
 {% block content %}
-	
+
 	<div class="formWrapper">
 
 		<form method="POST" action="{{ path_for('user.create') }}">
-		
+
 			<section id="new-user" class="settings">
 
 				<header class="headline">
 					<h1>Create New User</h1>
 				</header>
-				
+
 				<fieldset class="auth">
 
 					<div class="large{{ errors.username ? ' errors' : '' }}">
@@ -22,7 +22,7 @@
 							<span class="error">{{ errors.username | first }}</span>
 						{% endif %}
 					</div>
-					
+
 					<div class="large{{ errors.email ? ' errors' : '' }}">
 						<label for="email">E-Mail <abbr title="required">*</abbr></label>
 						<input type="text" name="email" value="{{ old.email ? old.email : '' }}" required>
@@ -41,8 +41,8 @@
 						{% if errors.userrole %}
 							<span class="error">{{ errors.userrole | first }}</span>
 						{% endif %}
-					</div>					
-					
+					</div>
+
 					<div class="large{{ errors.password ? ' errors' : '' }}">
 						<label for="password">Password <abbr title="required">*</abbr></label>
 						<input type="password" name="password" required>
@@ -50,14 +50,14 @@
 							<span class="error">{{ errors.password | first }}</span>
 						{% endif %}
 					</div>
-					
+
 				</fieldset>
 
 			</section>
 			<input type="submit" value="Create User" />
 
 			{{ csrf_field() | raw }}
-		</form>		
-	</div>	
-	
+		</form>
+	</div>
+
 {% endblock %}

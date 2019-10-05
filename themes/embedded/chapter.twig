@@ -1,0 +1,31 @@
+<div class="chapter">
+
+	{% if settings.themes.embedded.chapter %}
+
+		<div class="chapterNumber">{{ settings.themes.embedded.chapter }} {{ item.chapter }}</div>
+
+	{% endif %}
+
+	{% if content is empty %}
+
+		<h1>{{ item.name }}</h1>
+
+	{% endif %}
+
+	<h1>{{ title }}</h1>
+
+	{{ content }}
+
+</div>
+
+<div class="toc-nav">
+
+	<ul>
+		{% for element in item.folderContent %}
+			<li class="level-2">
+				<a href="{{ element.urlAbs }}">{{ element.name }}</a>
+			</li>
+		{% endfor %}
+	</ul>
+
+</div>

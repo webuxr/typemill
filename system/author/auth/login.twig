@@ -4,13 +4,13 @@
 {% block content %}
 
 	<div class="setupWrapper">
-		
+
 		<div class="setupContent">
 			<p><i class="icon-bookmark-empty"></i>Remember to bookmark this page</p>
 		</div>
 		<div class="authformWrapper">
 			<form method="POST" action="{{ path_for("auth.login") }}" autocomplete="off">
-			
+
 				<fieldset class="auth">
 					<div class="formElement{{ errors.username ? ' errors' : '' }}">
 						<label for="username">Username <abbr title="required">*</abbr></label>
@@ -28,20 +28,22 @@
 					</div>
 				</fieldset>
 
-				<div class="loginarea" id="loginarea">			
+				<div class="loginarea" id="loginarea">
 					<input type="submit" value="Login" id="loginbutton" class="loginbutton" />
 					{{ csrf_field() | raw }}
-					
+
 					{% if messages.time %}
 						<div id="counter" class="counter">wait <span id="wait">{{ messages.time }}</span> sec</div>
 						<div class="forgotpw"><a href="https://typemill.net/writers/forgot-password" target="_blank">Forgot password?</a></div>
-					{% endif %}			
+					{% endif %}
 				</div>
-			</form>		
+			</form>
 		</div>
 		<div class="setupContent">
 			<p><a href="{{ base_url() }}">back to startpage</a></p>
 		</div>
+
 	</div>
+
 	<footer></footer>
 {% endblock %}

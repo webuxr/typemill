@@ -2,14 +2,14 @@
 {% block title %}Raw Content Editor{% endblock %}
 
 {% block content %}
-	
+
 	<div class="formWrapper">
 
 		<div id="editor" class="editor">
 			<form action="#" v-cloak>
-			
+
 				<section>
-				
+
 					<fieldset>
 						<div class="large" :class="{'error' : errors.title}">
 							<label for="title">Title*</label>
@@ -23,16 +23,16 @@
 						</div>
 						<input id="path" type="hidden" value="{{ item.urlRel }}" required readonly />
 					</fieldset>
-					
+
 				</section>
-				
+
 			</form>
 		</div>
-		
+
 		{% include 'editor/publish-controller.twig' %}
 
 		{{ csrf_field() | raw }}
-		
+
 	</div>
-	
+
 {% endblock %}

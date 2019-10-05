@@ -1,0 +1,67 @@
+{% if content is empty %}
+	<h1>{{ item.name }}</h1>
+{% endif %}
+
+<h1>{{ title }}</h1>
+
+{% if (settings.themes.embedded.socialPosition.top or settings.themes.embedded.modifiedPosition.top or settings.themes.embedded.authorPosition.top or settings.themes.embedded.gitPosition.top) %}
+	<div class="meta-info">
+		{% if settings.themes.embedded.authorPosition.top %}
+			<small>{{ settings.themes.embedded.authorIntro }}: {{ settings.author }}</small>
+		{% endif %}
+		{% if settings.themes.embedded.modifiedPosition.top %}
+			<small>{{ settings.themes.embedded.modifiedText }}: {{ item.modified|date(settings.themes.embedded.modifiedFormat) }}</small>
+		{% endif %}
+		{% if settings.themes.embedded.socialPosition.top %}
+			<div id="share-icons" class="share-icons hide">
+				{% include 'partials/share.twig' with {'share' : settings.themes.embedded.socialButtons } %}
+				<div class="share-button" id="share-button">
+					<i class="icon-share"></i>
+				</div>
+			</div>
+		{% endif %}
+		{% if settings.themes.embedded.gitPosition.top %} 
+			<div class="gitlink"><a title="edit on github" href="{{ settings.themes.embedded.gitlink }}{{ item.path }}">edit <i class="icon-github-circled"></i></a></div>
+		{% endif %}
+	</div>
+{% endif %}
+
+
+{{ content }}
+
+
+{% if (settings.themes.embedded.socialPosition.bottom or settings.themes.embedded.modifiedPosition.bottom or settings.themes.embedded.authorPosition.bottom or settings.themes.embedded.gitPosition.bottom) %}
+	<div class="meta-info">
+		{% if settings.themes.embedded.authorPosition.bottom %}
+			<small>{{ settings.themes.embedded.authorIntro }}: {{ settings.author }}</small>
+		{% endif %}
+		{% if settings.themes.embedded.modifiedPosition.bottom %}
+			<small>{{ settings.themes.embedded.modifiedText }}: {{ item.modified|date(settings.themes.embedded.modifiedFormat) }}</small>
+		{% endif %}
+		{% if settings.themes.embedded.socialPosition.bottom %}
+			<div id="share-icons-bottom" class="share-icons hide">
+				{% include 'partials/share.twig' with {'share' : settings.themes.embedded.socialButtons } %}
+				<div id="share-button-bottom" class="share-button">
+					<i class="icon-share"></i>
+				</div>
+			</div>
+		{% endif %}
+		{% if settings.themes.embedded.gitPosition.bottom %}
+			<div class="gitlink"><a title="edit on github" href="{{ settings.themes.embedded.gitlink }}{{ item.path }}">edit <i class="icon-github-circled"></i></a></div>
+		{% endif %}
+	</div>
+{% endif %}
+
+
+{% if item.prevItem or item.nextItem %}
+
+	<div class="paging">
+		{% if item.prevItem %}
+			<span class="prev"><a href="{{ item.prevItem.urlRel }}"><i class="icon-left-open-big"></i> {{ item.prevItem.name }}</a></span>
+		{% endif %}
+		{% if item.nextItem %}
+			<span class="next"><a href="{{ item.nextItem.urlRel }}">{{ item.nextItem.name }} <i class="icon-right-open-big"></i></a></span>
+		{% endif %}
+	</div>
+
+{% endif %}
